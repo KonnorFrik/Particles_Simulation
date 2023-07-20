@@ -2,15 +2,9 @@
 #include <SDL2/SDL_image.h>
 #include <SDL2/SDL_timer.h>
 
-enum ERR_CODES {
-    INIT_ERR = 10,
-};
+#include "settings.h"
+#include "life.h"
 
-#define FPS 60
-
-#define WIN_H 500
-#define WIN_W 1000
- 
 int main(int argc, char *argv[]) {
     int status = 0;
 
@@ -37,13 +31,11 @@ int main(int argc, char *argv[]) {
         status = INIT_ERR;
     }
 
-    int box_size = 3;
-    SDL_Rect rect;
-    rect.w = box_size;
-    rect.h = box_size;
-    //rect.x = (Win_width / 2) - (rect.w / 2);
-    //rect.y = (Win_height / 2) - (rect.h / 2);
+    int radius_step = 1;
 
+    SDL_Rect rect;
+    rect.w = MIN_ATOM_RADUIS;
+    rect.h = MIN_ATOM_RADUIS;
 
     SDL_Event event;
     int work = 1;
@@ -55,29 +47,39 @@ int main(int argc, char *argv[]) {
             }
 
             if (event.type == SDL_KEYDOWN) {
-                if (event.key.keysym.scancode == SDL_SCANCODE_Q) {
+                if (event.key.keysym.scancode == SDL_SCANCODE_ESCAPE) {
                     work = 0;
+                }
 
+                if (event.key.keysym.scancode == SDL_SCANCODE_KP_PLUS) {
+                    change_radius(&rect, rect.w + radius_step);
+
+                }
+
+                if (event.key.keysym.scancode == SDL_SCANCODE_KP_MINUS) {
+                    change_radius(&rect, rect.w - radius_step);
                 }
             }
         }
 
         SDL_GetWindowSize(window, &Win_width, &Win_height);
 
+        /***********PROCESSING PART***********/
+        //need func for update all atoms in arr with their rule (
         rect.x = (Win_width / 2) - (rect.w / 2);
         rect.y = (Win_height / 2) - (rect.h / 2);
+        /***********PROCESSING PART***********/
 
+        /***********RENDER PART***********/
         SDL_RenderClear(rend); // clear all screen
 
+        ///////need func for draw all atoms in arr with their color
         SDL_SetRenderDrawColor(rend, 255, 0, 0, 255); // set drawing color for rect
-
-        //SDL_RenderDrawRect(rend, &rect); // draw rect
-        //SDL_RenderFillRect(rend, &rect); // draw rect
-        SDL_RenderDrawPoint(rend, (Win_width / 2), (Win_height / 2));
+        SDL_RenderFillRect(rend, &rect); // draw filled rect
+        //////////////////////////////////////////////////////////////////////////////
 
         SDL_SetRenderDrawColor(rend, 0, 0, 0, 255); // set color for screen
-
-        SDL_RenderPresent(rend); // apply previous renderer call
+        SDL_RenderPresent(rend); // apply previous renderer call's
 
         SDL_Delay(1000 / FPS);
     }

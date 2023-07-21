@@ -31,7 +31,11 @@ Escape - close programm
 
 
 todo
+- scan file for groups, rules
 - randomise random
 - border for atoms
 - keyboard input ( space- random rules, r- restart with rules)
 - FREEEEEEEEEEE of arrs
+
+far far todo:
+- GUI with sliders

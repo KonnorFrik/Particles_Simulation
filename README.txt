@@ -22,3 +22,10 @@ Example:
 
 So: Color is enum
 power position in arr is enum color code of atom struct
+
+
+Key Map:
+NumPad '+' - Plus size of atoms
+NumPad '-' - Minus size of atoms
+Escape - close programm
+

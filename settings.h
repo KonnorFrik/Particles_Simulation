@@ -10,6 +10,7 @@
 #define WIN_W 1000
 
 enum ERR_CODES {
+    NULL_PTR = 1,
     INIT_ERR = 10,
 };
 

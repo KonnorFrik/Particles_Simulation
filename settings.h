@@ -4,10 +4,13 @@
 #define DEBUG 1
 #define MESSAGES 1
 
-#define FPS 60
+#define FPS 20
+#define MIN_FPS 1
+#define MAX_FPS 60
 
-#define WIN_H 500
-#define WIN_W 1000
+#define WIN_H 1080
+#define WIN_W 930
+#define WINDOW_ZERO_POS 0
 
 enum ERR_CODES {
     NULL_PTR = 1,

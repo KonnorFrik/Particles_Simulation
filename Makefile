@@ -12,7 +12,7 @@ HDRS :=
 
 all: check_dirs life clean
 
-life: life.o atom_processing.o
+life: life.o atom_processing.o my_math.o
 > $(CC) $? $(CFLAGS) -o $(build_dir)/$@
 
 check_dirs: check_dirs.sh

@@ -1,41 +1,15 @@
-Atoms have:
-    SDL_rect struct
-    color in 'R G B A' format
-    rule?
+Simulation of atoms/cells/etc.
+
+Model and Rules:
+    Each 'atom' has an attractive or repulsive force to other 'atoms' (self group and another)
 
 
-The rule defines how group of atoms interact with other group and with themselves
+Keys:
+NumPad Plus - plus radius of atom
+NumPad Minus - minus radius of atom
 
-Atom struct have array with size of count of groups with powers which depends what do whith other groups
+Arrow Up - more FPS
+Arrow Down - less FPS
 
-Example:
-    2 groups - RED and GREEN
-    RED attracted to RED
-    RED repelled from GREEN
-
-    GREEN neutral to GREEN
-    GREEN attracted to RED
-
-    RED have arr [-1, 0.5] // -1 for red atoms, 0.5 for green
-
-    GREEN have arr [-0.3, 0] // -0.3 for red, 0 for green 
-
-So: Color is enum
-power position in arr is enum color code of atom struct
-
-
-Key Map:
-NumPad '+' - Plus size of atoms
-NumPad '-' - Minus size of atoms
-Escape - close programm
-
-
-todo
-- scan file for groups, rules
-- randomise random
-- border for atoms
-- keyboard input ( space- random rules, r- restart with rules)
-- FREEEEEEEEEEE of arrs
-
-far far todo:
-- GUI with sliders
+r - reset position to random
+space - new rules (powers)

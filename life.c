@@ -1,12 +1,17 @@
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_image.h>
 #include <SDL2/SDL_timer.h>
+#include <time.h>
 #include <math.h>
 
 #include "settings.h"
 #include "life.h"
+//#include "color.h"
 
 int main(int argc, char *argv[]) {
+    time_t t;
+    srand((unsigned) time(&t));
+
     int status = 0;
 
     int Win_width = WIN_W;
@@ -18,8 +23,8 @@ int main(int argc, char *argv[]) {
     }
 
     SDL_Window* window = SDL_CreateWindow("Move Rectangle", // creates a window
-                                       SDL_WINDOWPOS_CENTERED,
-                                       SDL_WINDOWPOS_CENTERED,
+                                       WINDOW_ZERO_POS,
+                                       WINDOW_ZERO_POS,
                                        Win_width,
                                        Win_height,
                                        SDL_WINDOW_SHOWN | SDL_WINDOW_RESIZABLE);
@@ -35,7 +40,6 @@ int main(int argc, char *argv[]) {
 
     /*****COLOR MODULE*********/
     const int COLOR_CODES[] = { RED, GREEN };
-
     int* COLORS[sizeof(COLOR_CODES) / sizeof(COLOR_CODES[0])];
     int RED_COLOR[4] = { 255, 0, 0, 255 };
     int GREEN_COLOR[4] = { 0, 255, 0, 255 };
@@ -47,17 +51,18 @@ int main(int argc, char *argv[]) {
 
     int groups = sizeof(COLOR_CODES) / sizeof(COLOR_CODES[0]);
     int atoms_per_group = START_ATOMS_COUNT;
-    int atoms_count = groups * atoms_per_group;
+    //int atoms_count = groups * atoms_per_group;
 
-    // init all groups arr 
+    /************INIT ALL GROUPS ARRAY**************/
     ATOM*** atoms_arr = calloc(groups, sizeof(ATOM**));
     if (atoms_arr == NULL) {
         status = NULL_PTR;
         printf("[ERR %d] Can't allocate atom array\n", status);
         exit(status);
     }
+    /************INIT ALL GROUPS ARRAY**************/
 
-    // init groups 
+    /************INIT ALL ATOM'S IN ALL GROUPS****************/
     for (int gr = 0; gr < groups; ++gr) {
         atoms_arr[gr] = calloc(atoms_per_group, sizeof(ATOM*));
         if (atoms_arr[gr] == NULL) {
@@ -70,29 +75,35 @@ int main(int argc, char *argv[]) {
             atoms_arr[gr][i] = init_atom(&status);
         }
     }
-
     if (status) {
         printf("[ERR %d] Can't allocate atom\n", status);
         exit(status);
     }
+    /************INIT ALL ATOM'S IN ALL GROUPS****************/
     
-    // fill group
+    /************FILL EACH ATOM BASIC INFO*****************/
     for (int gr = 0; gr < groups; ++gr) {
+        float* powers = get_random_powers(groups);
         for (int i = 0; i < atoms_per_group; ++i) {
-            float* powers = get_random_powers(groups);
             fill_atom(atoms_arr[gr][i], START_ATOM_RADIUS, COLOR_CODES[gr], powers);
         }
     }
 
+    //***********SET RANDOM POSITION****************//
     for (int gr = 0; gr < groups; ++gr) {
         random_position(atoms_arr[gr], atoms_per_group);
     }
+    /************FILL EACH ATOM BASIC INFO*****************/
 
     if (DEBUG) {
         printf("[DEBUG] 1st atom\n");
         printf("x:%d y:%d\n", atoms_arr[0][0]->atom->x, atoms_arr[0][0]->atom->y);
         printf("color code:%d\n", atoms_arr[0][0]->color_code);
-        printf("powers:%f\n", atoms_arr[0][0]->powers[0]);
+        printf("powers: ");
+        for (int gr = 0; gr < groups; ++gr) {
+            printf("%f ", atoms_arr[0][0]->powers[gr]);
+        }
+        printf("\n");
         printf("[DEBUG]\n\n");
         //getchar();
     }
@@ -100,10 +111,12 @@ int main(int argc, char *argv[]) {
 
     SDL_Event event;
     int work = 1;
+    int fps = FPS;
     while (work == 1 && status == 0) {
-        SDL_Delay(1000 / FPS);
+        SDL_Delay(1000 / fps);
         SDL_RenderClear(rend); // clear all screen
 
+        /*******************EVENT PROCESSING*******************************/
         while (SDL_PollEvent(&event)) {
             if (event.type == SDL_QUIT) {
                 work = 0;
@@ -114,40 +127,74 @@ int main(int argc, char *argv[]) {
                 }
                 if (event.key.keysym.scancode == SDL_SCANCODE_KP_PLUS) {
                     for (int gr = 0; gr < groups; ++gr) {
-                        for (int i = 0; i < atoms_count; ++i) {
+                        for (int i = 0; i < atoms_per_group; ++i) {
                             change_radius(atoms_arr[gr][i]->atom, atoms_arr[gr][i]->atom->w + radius_step);
                         }
                     }
                 }
                 if (event.key.keysym.scancode == SDL_SCANCODE_KP_MINUS) {
                     for (int gr = 0; gr < groups; ++gr) {
-                        for (int i = 0; i < atoms_count; ++i) {
+                        for (int i = 0; i < atoms_per_group; ++i) {
                             change_radius(atoms_arr[gr][i]->atom, atoms_arr[gr][i]->atom->w - radius_step);
                         }
                     }
                 }
+
+                if (event.key.keysym.scancode == SDL_SCANCODE_SPACE) {
+                    if (DEBUG) { printf("\nNEW RULES\n"); }
+
+                    for (int gr = 0; gr < groups; ++gr) {
+                        float* powers = get_random_powers(groups);
+                        for (int i = 0; i < atoms_per_group; ++i) {
+                            fill_atom(atoms_arr[gr][i], atoms_arr[gr][i]->atom->w, COLOR_CODES[gr], powers);
+                        }
+                    }
+                    if (DEBUG) {
+                        printf("powers: ");
+                        for (int gr = 0; gr < groups; ++gr) {
+                            printf("%f ", atoms_arr[0][0]->powers[gr]);
+                        }
+                        printf("\n");
+                    }
+                }
+
+                if (event.key.keysym.scancode == SDL_SCANCODE_R) {
+                    if (DEBUG) { printf("\nRESET POS\n"); }
+
+                    for (int gr = 0; gr < groups; ++gr) {
+                        random_position(atoms_arr[gr], atoms_per_group);
+                    }
+                }
+
+                if (event.key.keysym.scancode == SDL_SCANCODE_UP) {
+                    fps++;
+                    if (fps >= MAX_FPS) { fps = MAX_FPS; }
+                    if (DEBUG) { printf("NEW FPS: %d\n", fps); }
+                }
+
+                if (event.key.keysym.scancode == SDL_SCANCODE_DOWN) {
+                    fps--;
+                    if (fps <= MIN_FPS) { fps = MIN_FPS; }
+                    if (DEBUG) { printf("NEW FPS: %d\n", fps); }
+                }
             }
         }
+        /*******************EVENT PROCESSING*******************************/
 
         SDL_GetWindowSize(window, &Win_width, &Win_height);
 
-        /***********PROCESSING PART***********/
-        //need func for update all atoms in arr with their rule (
+        /***********ATOM PROCESSING PART***********/
         for (int gr1 = 0; gr1 < groups; ++gr1) {
             for(int gr2 = 0; gr2 < groups; ++gr2) {
-                if (DEBUG) {
-                    printf("[DEBUG]\n");
-                    printf("gr1: %d\n", gr1);
-                    printf("gr2: %d\n", gr2);
-                }
-
                 process_groups(atoms_arr, COLOR_CODES[gr1], COLOR_CODES[gr2], atoms_per_group);
             }
         }
-        /***********PROCESSING PART***********/
+
+        keep_in_screen(atoms_arr, groups, atoms_per_group, Win_width, Win_height);
+        /***********ATOM PROCESSING PART***********/
 
 
-        /***********RENDER PART***********/
+        /***************RENDER****************/
 
         ///////need func for draw all atoms in arr with their color
         for (int gr = 0; gr < groups; ++gr) {
@@ -157,11 +204,10 @@ int main(int argc, char *argv[]) {
                 SDL_RenderFillRect(rend, atoms_arr[gr][i]->atom); // draw filled rect
             }
         }
-        //////////////////////////////////////////////////////////////////////////////
 
         SDL_SetRenderDrawColor(rend, 0, 0, 0, 255); // set color for screen
         SDL_RenderPresent(rend); // apply previous renderer call's
-
+        /***************RENDER****************/
     }
 
     SDL_DestroyRenderer(rend);

@@ -74,15 +74,6 @@ void random_position(ATOM** group, int group_size) {
     }
 }
 
-float frand() {
-    float a = POWER_MAX;
-    float res = ((float)rand()/(float)(RAND_MAX)) * a;
-    if ((rand() % 2) == 2) {
-        res = -res;
-    }
-    return res;
-}
-
 float* get_random_powers(int groups) {
     float* pwrs = calloc(groups, sizeof(int));
     if (pwrs != NULL) {
@@ -93,6 +84,11 @@ float* get_random_powers(int groups) {
 
     return pwrs;
 }
+
+/*
+float read_powers_file(int color) {
+}
+ */
 
 void process_groups(ATOM*** all, int color1, int color2, int group_size) {
     ATOM** group1 = all[color1];
@@ -109,22 +105,44 @@ void process_groups(ATOM*** all, int color1, int color2, int group_size) {
                 float F = group1[first]->powers[color2] * 1 / d;
                 fx += F * dx;
                 fy += F * dy;
-                if (DEBUG) {
-                    printf("F: %f\n", F);
-                }
+
+                //if (DEBUG) {
+                    //printf("F: %f\n", F);
+                //}
             }
 
             group1[first]->atom->x += round(fx);
             group1[first]->atom->y += round(fy);
 
-            if (DEBUG) {
-                printf("[DEBUG]\n");
-                printf("f: %d, s:%d\n", first, second);
-                printf("fx: %f  fy: %f\n", fx, fy);
-                printf("dx: %f  dy: %f\n", dx, dy);
-                printf("d: %d\n", d);
-                printf("i: %d, atom[f]->x: %d  atom[f]->y: %d\n", first, group1[first]->atom->x, group1[first]->atom->y);
-                printf("\n");
+            //if (DEBUG) {
+                //printf("[DEBUG]\n");
+                //printf("f: %d, s:%d\n", first, second);
+                //printf("fx: %f  fy: %f\n", fx, fy);
+                //printf("dx: %f  dy: %f\n", dx, dy);
+                //printf("d: %d\n", d);
+                //printf("i: %d, atom[f]->x: %d  atom[f]->y: %d\n", first, group1[first]->atom->x, group1[first]->atom->y);
+                //printf("\n");
+            //}
+
+        }
+    }
+}
+
+void keep_in_screen(ATOM*** all, int groups, int atoms_per_group, int win_w, int win_h) {
+    for (int gr = 0; gr < groups; ++gr) {
+        for (int i = 0; i < atoms_per_group; ++i) {
+            if (all[gr][i]->atom->x >= win_w) {
+                all[gr][i]->atom->x = win_w - (5 + all[gr][i]->atom->w);
+
+            } else if (all[gr][i]->atom->x <= 0) {
+                all[gr][i]->atom->x = (5 + all[gr][i]->atom->w);
+            }
+
+            if (all[gr][i]->atom->y >= win_h) {
+                all[gr][i]->atom->y = win_h - (5 + all[gr][i]->atom->w);
+
+            } else if (all[gr][i]->atom->y <= 0) {
+                all[gr][i]->atom->y = (5 + all[gr][i]->atom->w);
             }
 
         }

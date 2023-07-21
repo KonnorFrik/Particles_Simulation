@@ -74,15 +74,59 @@ void random_position(ATOM** group, int group_size) {
     }
 }
 
-float* get_powers_by_code(int color) {
-    float* pwrs = calloc(1, sizeof(int));
+float frand() {
+    float a = POWER_MAX;
+    float res = ((float)rand()/(float)(RAND_MAX)) * a;
+    if ((rand() % 2) == 2) {
+        res = -res;
+    }
+    return res;
+}
+
+float* get_random_powers(int groups) {
+    float* pwrs = calloc(groups, sizeof(int));
     if (pwrs != NULL) {
-        pwrs[color] = -1.4;
+        for (int i = 0; i < groups; ++i) {
+            pwrs[i] = frand();
+        }
     }
 
     return pwrs;
 }
 
-void process_groups(ATOM*** all, int color1, int color2) {
-}
+void process_groups(ATOM*** all, int color1, int color2, int group_size) {
+    ATOM** group1 = all[color1];
+    ATOM** group2 = all[color2];
+    for (int first = 0; first < group_size; ++first) {
+        for (int second = 0; second < group_size; ++second) {
+            float fx = 0;
+            float fy = 0;
 
+            float dx = group1[first]->atom->x - group2[second]->atom->x;
+            float dy = group1[first]->atom->y - group2[second]->atom->y;
+            int d = sqrt((dx * dx) + (dy * dy));
+            if (d > 0) {
+                float F = group1[first]->powers[color2] * 1 / d;
+                fx += F * dx;
+                fy += F * dy;
+                if (DEBUG) {
+                    printf("F: %f\n", F);
+                }
+            }
+
+            group1[first]->atom->x += round(fx);
+            group1[first]->atom->y += round(fy);
+
+            if (DEBUG) {
+                printf("[DEBUG]\n");
+                printf("f: %d, s:%d\n", first, second);
+                printf("fx: %f  fy: %f\n", fx, fy);
+                printf("dx: %f  dy: %f\n", dx, dy);
+                printf("d: %d\n", d);
+                printf("i: %d, atom[f]->x: %d  atom[f]->y: %d\n", first, group1[first]->atom->x, group1[first]->atom->y);
+                printf("\n");
+            }
+
+        }
+    }
+}

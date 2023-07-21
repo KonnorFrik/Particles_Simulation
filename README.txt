@@ -29,3 +29,9 @@ NumPad '+' - Plus size of atoms
 NumPad '-' - Minus size of atoms
 Escape - close programm
 
+
+todo
+- randomise random
+- border for atoms
+- keyboard input ( space- random rules, r- restart with rules)
+- FREEEEEEEEEEE of arrs

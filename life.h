@@ -8,8 +8,11 @@
 
 #define START_ATOMS_COUNT 20
 
+#define POWER_MAX 5.0
+
 enum color_codes {
     RED = 0,
+    GREEN,
 };
 
 typedef struct {
@@ -23,6 +26,7 @@ ATOM* init_atom(int* status);
 void fill_atom(ATOM* obj, int radius, int color, float* powers);
 void destroy_atom(ATOM* obj);
 void random_position(ATOM** group, int group_size);
-float* get_powers_by_code(int color);
+float* get_random_powers(int groups);
+void process_groups(ATOM*** all, int color1, int color2, int group_size);
 
 #endif

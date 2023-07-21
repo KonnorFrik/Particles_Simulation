@@ -1,5 +1,5 @@
 .RECIPEPREFIX = >
-.PHONY: all clean
+.PHONY: all
 # A simple Makefile for compiling small SDL projects
 
 CC := clang
@@ -24,6 +24,9 @@ check_dirs: check_dirs.sh
 
 #glfont: glfont.c Makefile
 #> $(CC) -o $@ $@.c $(CFLAGS) $(LIBS)
+
+debug: life.c atom_processing.c
+> $(CC) $(CFLAGS) -g $? -o $(build_dir)/$@
 
 clean:
 > rm -f *.o

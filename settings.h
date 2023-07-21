@@ -14,4 +14,11 @@ enum ERR_CODES {
     INIT_ERR = 10,
 };
 
+enum RGBA_CODES {
+    R = 0,
+    G,
+    B,
+    A,
+};
+
 #endif

@@ -33,19 +33,42 @@ int main(int argc, char *argv[]) {
         exit(status);
     }
 
+    /*****COLOR MODULE*********/
+    const int COLOR_CODES[] = { RED, GREEN };
+
+    int* COLORS[sizeof(COLOR_CODES) / sizeof(COLOR_CODES[0])];
+    int RED_COLOR[4] = { 255, 0, 0, 255 };
+    int GREEN_COLOR[4] = { 0, 255, 0, 255 };
+    COLORS[RED] = RED_COLOR;
+    COLORS[GREEN] = GREEN_COLOR;
+    /*****COLOR MODULE*********/
+
     int radius_step = 1;
 
-    int atoms_count = START_ATOMS_COUNT;
-    ATOM** atoms_arr = calloc(atoms_count, sizeof(ATOM*));
+    int groups = sizeof(COLOR_CODES) / sizeof(COLOR_CODES[0]);
+    int atoms_per_group = START_ATOMS_COUNT;
+    int atoms_count = groups * atoms_per_group;
+
+    // init all groups arr 
+    ATOM*** atoms_arr = calloc(groups, sizeof(ATOM**));
     if (atoms_arr == NULL) {
         status = NULL_PTR;
         printf("[ERR %d] Can't allocate atom array\n", status);
         exit(status);
     }
 
-    // init group 
-    for (int i = 0; i < atoms_count; ++i) {
-        atoms_arr[i] = init_atom(&status);
+    // init groups 
+    for (int gr = 0; gr < groups; ++gr) {
+        atoms_arr[gr] = calloc(atoms_per_group, sizeof(ATOM*));
+        if (atoms_arr[gr] == NULL) {
+            status = NULL_PTR;
+            printf("[ERR %d] Can't allocate group array\n", status);
+            exit(status);
+        }
+
+        for (int i = 0; i < atoms_per_group; ++i) {
+            atoms_arr[gr][i] = init_atom(&status);
+        }
     }
 
     if (status) {
@@ -54,23 +77,26 @@ int main(int argc, char *argv[]) {
     }
     
     // fill group
-    for (int i = 0; i < atoms_count; ++i) {
-        float* powers = get_powers_by_code(RED);
-        fill_atom(atoms_arr[i], START_ATOM_RADIUS, RED, powers);
+    for (int gr = 0; gr < groups; ++gr) {
+        for (int i = 0; i < atoms_per_group; ++i) {
+            float* powers = get_random_powers(groups);
+            fill_atom(atoms_arr[gr][i], START_ATOM_RADIUS, COLOR_CODES[gr], powers);
+        }
     }
 
-    random_position(atoms_arr, atoms_count);
+    for (int gr = 0; gr < groups; ++gr) {
+        random_position(atoms_arr[gr], atoms_per_group);
+    }
 
     if (DEBUG) {
         printf("[DEBUG] 1st atom\n");
-        printf("x:%d y:%d\n", atoms_arr[0]->atom->x, atoms_arr[0]->atom->y);
-        printf("color code:%d\n", atoms_arr[0]->color_code);
-        printf("powers:%f\n", atoms_arr[0]->powers[0]);
+        printf("x:%d y:%d\n", atoms_arr[0][0]->atom->x, atoms_arr[0][0]->atom->y);
+        printf("color code:%d\n", atoms_arr[0][0]->color_code);
+        printf("powers:%f\n", atoms_arr[0][0]->powers[0]);
         printf("[DEBUG]\n\n");
-        getchar();
+        //getchar();
     }
 
-    float g = -1.4;
 
     SDL_Event event;
     int work = 1;
@@ -87,13 +113,17 @@ int main(int argc, char *argv[]) {
                     work = 0;
                 }
                 if (event.key.keysym.scancode == SDL_SCANCODE_KP_PLUS) {
-                    for (int i = 0; i < atoms_count; ++i) {
-                        change_radius(atoms_arr[i]->atom, atoms_arr[i]->atom->w + radius_step);
+                    for (int gr = 0; gr < groups; ++gr) {
+                        for (int i = 0; i < atoms_count; ++i) {
+                            change_radius(atoms_arr[gr][i]->atom, atoms_arr[gr][i]->atom->w + radius_step);
+                        }
                     }
                 }
                 if (event.key.keysym.scancode == SDL_SCANCODE_KP_MINUS) {
-                    for (int i = 0; i < atoms_count; ++i) {
-                        change_radius(atoms_arr[i]->atom, atoms_arr[i]->atom->w - radius_step);
+                    for (int gr = 0; gr < groups; ++gr) {
+                        for (int i = 0; i < atoms_count; ++i) {
+                            change_radius(atoms_arr[gr][i]->atom, atoms_arr[gr][i]->atom->w - radius_step);
+                        }
                     }
                 }
             }
@@ -103,42 +133,29 @@ int main(int argc, char *argv[]) {
 
         /***********PROCESSING PART***********/
         //need func for update all atoms in arr with their rule (
-        for (int i = 0; i < atoms_count - 1; ++i) {
-            float fx = 0;
-            float fy = 0;
-
-            float dx = atoms_arr[i]->atom->x - atoms_arr[i + 1]->atom->x;
-            float dy = atoms_arr[i]->atom->y - atoms_arr[i + 1]->atom->y;
-            int d = sqrt((dx * dx) + (dy * dy));
-            if (d > 0) {
-                float F = atoms_arr[i]->powers[0] * 1 / d;
-                fx += F * dx;
-                fy += F * dy;
+        for (int gr1 = 0; gr1 < groups; ++gr1) {
+            for(int gr2 = 0; gr2 < groups; ++gr2) {
                 if (DEBUG) {
-                    printf("F: %f\n", F);
+                    printf("[DEBUG]\n");
+                    printf("gr1: %d\n", gr1);
+                    printf("gr2: %d\n", gr2);
                 }
-            }
 
-            atoms_arr[i]->atom->x += round(fx);
-            atoms_arr[i]->atom->y += round(fy);
-
-            if (DEBUG) {
-                printf("[DEBUG]\n");
-                printf("fx: %f  fy: %f\n", fx, fy);
-                printf("dx: %f  dy: %f\n", dx, dy);
-                printf("d: %d\n", d);
-                printf("i: %d, atom[i]->x: %d  atom[i]->y: %d\n", i, atoms_arr[i]->atom->x, atoms_arr[i]->atom->y);
-                printf("\n");
+                process_groups(atoms_arr, COLOR_CODES[gr1], COLOR_CODES[gr2], atoms_per_group);
             }
         }
         /***********PROCESSING PART***********/
 
+
         /***********RENDER PART***********/
 
         ///////need func for draw all atoms in arr with their color
-        SDL_SetRenderDrawColor(rend, 255, 0, 0, 255); // set drawing color for rect
-        for (int i = 0; i < atoms_count; ++i) {
-            SDL_RenderFillRect(rend, atoms_arr[i]->atom); // draw filled rect
+        for (int gr = 0; gr < groups; ++gr) {
+            int* curr_color = COLORS[gr];
+            SDL_SetRenderDrawColor(rend, curr_color[R], curr_color[G], curr_color[B], curr_color[A]); // set drawing color for rect
+            for (int i = 0; i < atoms_per_group; ++i) {
+                SDL_RenderFillRect(rend, atoms_arr[gr][i]->atom); // draw filled rect
+            }
         }
         //////////////////////////////////////////////////////////////////////////////
 

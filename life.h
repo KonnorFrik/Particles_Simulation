@@ -5,19 +5,29 @@
 #define MIN_ATOM_RADIUS 1
 #define START_ATOM_RADIUS 5
 #define MAX_ATOM_RADIUS 100
+#define SPEED_LIMIT 0.9
+#define ATOM_SEARCH_RADIUS 80
 
-#define START_ATOMS_COUNT 100 // per group
+#define START_ATOMS_COUNT 250 // per group
 
-#define POWER_MAX 4
+#define POWER_MAX 3
 
 enum color_codes {
     RED = 0,
     GREEN,
+    BLUE,
+    YELLOW,
+    WHITE,
+    CYAN,
+    PINK,
 };
 
 typedef struct {
     SDL_Rect* atom; // x y w h 
     int color_code;
+    float vx;
+    float vy;
+    int search_radius;
     float* powers;
 } ATOM;
 

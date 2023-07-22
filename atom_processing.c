@@ -1,5 +1,6 @@
 #include <SDL2/SDL.h>
 #include <stdlib.h>
+#include <math.h>
 
 #include "settings.h"
 #include "life.h"
@@ -35,6 +36,9 @@ ATOM* init_atom(int* status) {
         obj->atom = atom_rect;
         obj->color_code = 0;
         obj->powers = NULL;
+        obj->vx = 0;
+        obj->vy = 0;
+        obj->search_radius = ATOM_SEARCH_RADIUS;
 
     } else {
         *status = NULL_PTR;
@@ -101,7 +105,7 @@ void process_groups(ATOM*** all, int color1, int color2, int group_size) {
             float dx = group1[first]->atom->x - group2[second]->atom->x;
             float dy = group1[first]->atom->y - group2[second]->atom->y;
             int d = sqrt((dx * dx) + (dy * dy));
-            if (d > 0) {
+            if (d > 0 && d < group1[first]->search_radius) {
                 float F = group1[first]->powers[color2] * 1 / d;
                 fx += F * dx;
                 fy += F * dy;
@@ -111,14 +115,37 @@ void process_groups(ATOM*** all, int color1, int color2, int group_size) {
                 //}
             }
 
-            group1[first]->atom->x += round(fx);
-            group1[first]->atom->y += round(fy);
+            group1[first]->vx = (group1[first]->vx + fx) * 0.5;
+            group1[first]->vy = (group1[first]->vy + fy) * 0.5;
+
+            if (fabs(group1[first]->vx) >= SPEED_LIMIT) {
+                if (group1[first]->vx < 0) {
+                    group1[first]->vx = -SPEED_LIMIT;
+
+                } else {
+                    group1[first]->vx = SPEED_LIMIT;
+                }
+            }
+
+            if (fabs(group1[first]->vy) >= SPEED_LIMIT) {
+                if (group1[first]->vy < 0) {
+                    group1[first]->vy = -SPEED_LIMIT;
+
+                } else {
+                    group1[first]->vy = SPEED_LIMIT;
+                }
+
+            }
+
+            group1[first]->atom->x += round(group1[first]->vx);
+            group1[first]->atom->y += round(group1[first]->vy);
 
             //if (DEBUG) {
                 //printf("[DEBUG]\n");
                 //printf("f: %d, s:%d\n", first, second);
                 //printf("fx: %f  fy: %f\n", fx, fy);
                 //printf("dx: %f  dy: %f\n", dx, dy);
+                //printf("vx: %f , vy: %f\n", group1[first]->vx, group1[first]->vy);
                 //printf("d: %d\n", d);
                 //printf("i: %d, atom[f]->x: %d  atom[f]->y: %d\n", first, group1[first]->atom->x, group1[first]->atom->y);
                 //printf("\n");
@@ -131,18 +158,22 @@ void process_groups(ATOM*** all, int color1, int color2, int group_size) {
 void keep_in_screen(ATOM*** all, int groups, int atoms_per_group, int win_w, int win_h) {
     for (int gr = 0; gr < groups; ++gr) {
         for (int i = 0; i < atoms_per_group; ++i) {
-            if (all[gr][i]->atom->x >= win_w) {
-                all[gr][i]->atom->x = win_w - (5 + all[gr][i]->atom->w);
+            if ((all[gr][i]->atom->x + all[gr][i]->atom->w) >= win_w) {
+                all[gr][i]->atom->x = win_w - all[gr][i]->atom->w;
+                all[gr][i]->vx *= -1;
 
             } else if (all[gr][i]->atom->x <= 0) {
-                all[gr][i]->atom->x = (5 + all[gr][i]->atom->w);
+                all[gr][i]->atom->x = 1;
+                all[gr][i]->vx *= -1;
             }
 
-            if (all[gr][i]->atom->y >= win_h) {
-                all[gr][i]->atom->y = win_h - (5 + all[gr][i]->atom->w);
+            if ((all[gr][i]->atom->y + all[gr][i]->atom->h) >= win_h) {
+                all[gr][i]->atom->y = win_h - all[gr][i]->atom->w;
+                all[gr][i]->vy *= -1;
 
             } else if (all[gr][i]->atom->y <= 0) {
-                all[gr][i]->atom->y = (5 + all[gr][i]->atom->w);
+                all[gr][i]->atom->y = 1;
+                all[gr][i]->vy *= -1;
             }
 
         }

@@ -39,12 +39,17 @@ int main(int argc, char *argv[]) {
     }
 
     /*****COLOR MODULE*********/
-    const int COLOR_CODES[] = { RED, GREEN };
+    //const int COLOR_CODES[] = { RED };
+    const int COLOR_CODES[] = { RED, GREEN, BLUE };
     int* COLORS[sizeof(COLOR_CODES) / sizeof(COLOR_CODES[0])];
     int RED_COLOR[4] = { 255, 0, 0, 255 };
     int GREEN_COLOR[4] = { 0, 255, 0, 255 };
+    int BLUE_COLOR[4] = { 0, 0, 255, 255 };
+    int YELLOW_COLOR[4] = { 0, 255, 255, 255 };
+    int WHITE_COLOR[4] = { 255, 255, 255, 255 };
     COLORS[RED] = RED_COLOR;
     COLORS[GREEN] = GREEN_COLOR;
+    COLORS[BLUE] = BLUE_COLOR;
     /*****COLOR MODULE*********/
 
     int radius_step = 1;
@@ -84,10 +89,25 @@ int main(int argc, char *argv[]) {
     /************FILL EACH ATOM BASIC INFO*****************/
     for (int gr = 0; gr < groups; ++gr) {
         float* powers = get_random_powers(groups);
+
+        if (powers == NULL) {
+            status = NULL_PTR;
+            printf("[ERR %d] Can't allocate powers\n", status);
+            exit(status);
+        }
+
         for (int i = 0; i < atoms_per_group; ++i) {
             fill_atom(atoms_arr[gr][i], START_ATOM_RADIUS, COLOR_CODES[gr], powers);
         }
     }
+
+    //for (int i = 0; i < atoms_per_group; ++i) {
+        //atoms_arr[RED][i]->powers[RED]     = 1;
+        //atoms_arr[RED][i]->powers[GREEN]   = 1;
+        //atoms_arr[GREEN][i]->powers[RED]   = 1;
+        //atoms_arr[GREEN][i]->powers[GREEN] = 1;
+    //}
+
 
     //***********SET RANDOM POSITION****************//
     for (int gr = 0; gr < groups; ++gr) {
@@ -163,6 +183,10 @@ int main(int argc, char *argv[]) {
 
                     for (int gr = 0; gr < groups; ++gr) {
                         random_position(atoms_arr[gr], atoms_per_group);
+                        for (int elem = 0; elem < atoms_per_group; ++elem) {
+                            atoms_arr[gr][elem]->vx = 0;
+                            atoms_arr[gr][elem]->vy = 0;
+                        }
                     }
                 }
 
@@ -209,6 +233,15 @@ int main(int argc, char *argv[]) {
         SDL_RenderPresent(rend); // apply previous renderer call's
         /***************RENDER****************/
     }
+
+    for (int gr = 0; gr < groups; ++gr) {
+        for (int i = 0; i < atoms_per_group; ++i) {
+            //free(atoms_arr[gr][i]);
+            destroy_atom(atoms_arr[gr][i]);
+        }
+        free(atoms_arr[gr]);
+    }
+    free(atoms_arr);
 
     SDL_DestroyRenderer(rend);
     SDL_DestroyWindow(window);

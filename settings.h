@@ -4,7 +4,7 @@
 #define DEBUG 1
 #define MESSAGES 1
 
-#define FPS 20
+#define FPS 40
 #define MIN_FPS 1
 #define MAX_FPS 60
 

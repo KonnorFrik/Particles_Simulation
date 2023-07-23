@@ -60,13 +60,13 @@ void fill_atom(ATOM* obj, int radius, int color, float* powers) {
 
 void destroy_atom(ATOM* obj) {
     if (obj != NULL) {
-        if (obj->atom != NULL) {
-            free(obj->atom);
-        }
+        //if (obj->atom != NULL) {
+            //free(obj->atom);
+        //}
 
-        if (obj->powers != NULL) {
-            free(obj->powers);
-        }
+        //if (obj->powers != NULL) {
+            //free(obj->powers);
+        //}
         free(obj);
     }
 }

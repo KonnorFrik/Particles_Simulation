@@ -24,18 +24,10 @@ So: Color is enum
 power position in arr is enum color code of atom struct
 
 
-Key Map:
-NumPad '+' - Plus size of atoms
-NumPad '-' - Minus size of atoms
-Escape - close programm
-
-
 todo
-- scan file for groups, rules
-- randomise random
-- border for atoms (Is this realy need)
-- keyboard input ( space- random rules, r- restart with rules)
-- FREEEEEEEEEEE of arrs
+is it DB?:
+    - scan file for groups, rules
+    - save to file's
 
 far far todo:
 - GUI with sliders

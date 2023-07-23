@@ -12,8 +12,11 @@
 #define WIN_W 930
 #define WINDOW_ZERO_POS 0
 
+#define EXIT_CODE -1
 enum ERR_CODES {
-    NULL_PTR = 1,
+    NEUTRAL = 0,
+    NULL_PTR,       // 1
+    INPUT_ERR,      // 2
     INIT_ERR = 10,
 };
 

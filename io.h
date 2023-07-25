@@ -12,7 +12,7 @@ char* get_str();
 
 /***********OUT*********/
 void print_raw_str(char* str);
-void dirlist(char* dir_name);
+int dirlist(char* dir_name);
 /***********OUT*********/
 
 /***********OTHER*********/

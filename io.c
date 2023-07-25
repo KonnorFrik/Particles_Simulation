@@ -129,21 +129,22 @@ void print_raw_str(char* str) {
     printf("\n");
 }
 
-void dirlist(char* dir_name) {
+int dirlist(char* dir_name) {
     DIR* d = NULL;
     struct dirent* dir = NULL;
-    int count = 1;
+    int count = 0;
 
     d = opendir(dir_name);
     if (d != NULL) {
         while ((dir = readdir(d)) != NULL) {
             if (strcmp(dir->d_name, ".") != 0 &&  strcmp(dir->d_name, "..") != 0){
-                printf("%d.%s\n", count, dir->d_name);
                 count++;
+                printf("%d.%s\n", count, dir->d_name);
             }
         }
         closedir(d);
     }
+    return count;
 }
 
 void flnm_from_dir(char* dir_name, int offset) {

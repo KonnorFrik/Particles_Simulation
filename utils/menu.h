@@ -3,6 +3,11 @@
 
 #define RULES_DEFAULT_DIR "data"
 // main menu codes
-#define RULES_LIST 1
+#define FILEMODE "r+"
+
+#define CLOSE_RULE 0
+#define OPEN_RULE 1
+#define OPEN_DIR 2
+//#define RULES_LIST 2
 
 #endif

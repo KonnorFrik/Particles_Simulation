@@ -89,6 +89,17 @@ char* get_str(int* status) {
     return res;
 }
 
+float get_float(int* status) {
+    float res = 0.;
+    int scan_res = scanf("%f", &res);
+
+    if (scan_res != 1) {
+        *status = 1;
+    }
+
+    return res;
+}
+
 int get_number(int* status) {
     int res = 0;
     int scan_res = scanf("%d", &res);

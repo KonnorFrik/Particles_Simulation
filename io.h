@@ -7,6 +7,7 @@
 char* get_str(int* status);
 char* get_sized_str(unsigned int size, int* status);
 int get_number(int* status);
+float get_float(int* status);
 char* get_str();
 /***********IN*********/
 

@@ -4,7 +4,7 @@
 
 #include "../io.h"
 #include "../life/settings.h"
-#include "menu.h"
+#include "manager.h"
 
 
 /*
@@ -15,62 +15,94 @@
  */
 void print_menu();
 void print_info();
-void print_status(char* filename, char* dirname, FILE* file, int status);
+void print_status(char* filename, int status);
 
 int main() {
     int status = 0;
     int work = 1;
     int user_inp;
-    char* dirname = RULES_DEFAULT_DIR;
+
+    //int changed_dir_flag = 0;
+    //char* dirname = RULES_DEFAULT_DIR;
+
     char* filename = NULL;
-    FILE* file = NULL;
+    //FILE* file = NULL;
     print_info();
 
     /************MAIN MENU***************/
     while (work) {
-        if (status) {
-            printf("[ERR %d]\n", status);
-            status = NEUTRAL;
-        }
+        //if (status) {
+            //printf("[ERR %d]\n", status);
+            //status = NEUTRAL;
+        //}
 
         printf("\n");
         printf("\n");
-        print_status(filename, dirname, file, status);
+        print_status(filename, status);
         print_menu();
+
+        if (status) {
+            printf("[ERR %d] can't get number\n", status);
+            if (!feof(stdin)) {
+                if (DEBUG) { printf("[DEBUG] FLUSH STDIN\n"); }
+                flush_stdin();
+            }
+            user_inp = NEUTRAL;
+            status = NEUTRAL;
+            continue;
+        }
 
         printf(">> ");
         user_inp = get_number(&status);
         printf("\n======OUPUT======\n\n");
 
-        if (status) {
-            printf("[ERR %d] can't get number\n", status);
-            if (!feof(stdin)) {
-                flush_stdin();
-            }
-            user_inp = NEUTRAL;
-            //continue;
-        }
 
         if (user_inp == EXIT_CODE) {
             work = 0;
             continue;
 
-        //} else if (user_inp == CLOSE_RULE) {
-            //printf("CLOSE FILE\n");
             
-        } else if (user_inp == OPEN_RULE) {
-            printf("OPEN FILE\n");
-
-        } else if (user_inp == OPEN_DIR) {
+        } else if (user_inp == SHOW_RULE) {
             if (!feof(stdin)) {
                 flush_stdin();
             }
-            printf("Dir name\n>> ");
-            dirname = get_str(&status);
-            if (dirname == NULL) {
-                status = NULL_PTR;
+
+            printf("File path\n>> ");
+            if (filename != NULL) {
+                free(filename);
+                filename = NULL;
             }
-        
+            filename = get_str(&status);
+
+            if (filename != NULL) {
+                read_rule(filename, &status);
+
+            } else {
+                printf("[ERR %d] Can't get filepath\n", status);
+            }
+
+        } else if (user_inp == NEW_RULE) {
+            if (!feof(stdin)) {
+                flush_stdin();
+            }
+
+            printf("File path\n>> ");
+            if (filename != NULL) {
+                free(filename);
+                filename = NULL;
+            }
+            filename = get_str(&status);
+
+            if (filename != NULL) {
+                write_rule(filename, &status);
+
+            } else {
+                printf("[ERR %d] Can't get filepath\n", status);
+            }
+
+        } else if (user_inp == NEUTRAL) {
+            continue;
+
         } else {
             printf("Unknown command\n");
         }
@@ -78,17 +110,19 @@ int main() {
     }
     /************MAIN MENU***************/
 
-    if (dirname != NULL) {
-        free(dirname);
-    }
+    //if (dirname != NULL && changed_dir_flag == 1) {
+        //free(dirname);
+    //}
     
     if (filename != NULL) {
         free(filename);
     }
 
-    if (file != NULL) {
-        fclose(file);
-    }
+    //if (file != NULL) {
+        //fclose(file);
+    //}
+
+    printf("XXXXXXXXXXXXXXXXX\n");
     return 0;
 }
 
@@ -134,22 +168,19 @@ void print_info() {
 
 void print_menu() {
     //printf("%d. Close rule\n", CLOSE_RULE);
-    printf("%d. Open rule\n", OPEN_RULE);
-    printf("%d. Open rules dir\n", OPEN_DIR);
-    //new rule
-    //del rule
-    //printf("%d. List of rules\n", RULES_LIST);
+    printf("%d. Show rule\n", SHOW_RULE);
+    printf("%d. New rule\n", NEW_RULE);
     printf("%d. Exit\n", EXIT_CODE);
     //printf("\n");
 }
 
-void print_status(char* filename, char* dirname, FILE* file, int status) {
+void print_status(char* filename, int status) {
     //printf("\n");
     printf("--------Status------\n");
     printf("| Sys Status:   '%d'\n", status);
-    printf("| Rule Dir:     '%s'\n", dirname == NULL ? "-NULL-" : dirname);
+    //printf("| Rule Dir:     '%s'\n", dirname == NULL ? "-NULL-" : dirname);
     printf("| Rule File:    '%s'\n", filename == NULL ? "-NULL-" : filename);
-    printf("| Is Opened:     %s \n", file == NULL ? "NO" : "YES");
+    //printf("| Is Opened:     %s \n", file == NULL ? "NO" : "YES");
     printf("--------Status------\n");
     printf("\n");
 }

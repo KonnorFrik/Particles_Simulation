@@ -18,7 +18,7 @@ all: check_dirs life rule_manager clean
 life: life.o atom_processing.o my_math.o
 > $(CC) $? $(SDL_FLAGS) $(CFLAGS) -o $(build_dir)/$@
 
-rule_manager: rule_manager.o io.o
+rule_manager: rule_manager.o read_rule.o write_rule.o io.o
 > $(CC) $? $(CFLAGS) -o $(build_dir)/$@
 
 check_dirs: check_dirs.sh

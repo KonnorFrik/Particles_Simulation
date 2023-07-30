@@ -1,10 +1,9 @@
 #include <stdio.h>
 #include <stdlib.h>
-//#include <dirent.h>
 
 #include "../io.h"
 #include "../life/settings.h"
-#include "menu.h"
+#include "manager.h"
 
 /*
    Rule file struct
@@ -13,20 +12,19 @@
    int powers (count times)
  */
 
-void write_rule(char* filepath, int* status);
 
-int main() {
-    int status = 0;
-    printf("filename\n>> ");
-    char* filename = get_str(&status);
-    if (filename == NULL) {
-        printf("Can't get filename\n");
-        exit(status);
-    }
-    write_rule(filename, &status);
-    free(filename);
-    return status;
-}
+//int main() {
+    //int status = 0;
+    //printf("filename\n>> ");
+    //char* filename = get_str(&status);
+    //if (filename == NULL) {
+        //printf("Can't get filename\n");
+        //exit(status);
+    //}
+    //write_rule(filename, &status);
+    //free(filename);
+    //return status;
+//}
 
 void write_rule(char* filepath, int* status) {
     FILE* file_rule = fopen(filepath, "wb");

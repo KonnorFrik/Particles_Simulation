@@ -3,7 +3,7 @@
 
 #include "../io.h"
 #include "../life/settings.h"
-#include "menu.h"
+#include "manager.h"
 
 /*
    Rule file struct
@@ -12,29 +12,28 @@
    int powers (count times)
  */
 
-void read_rule(char* filepath, int* status);
 
-int main() {
-    int status = 0;
-    printf("filename\n>> ");
-    char* filename = get_str(&status);
-    if (filename == NULL) {
-        printf("Can't get filename\n");
-        exit(status);
-    }
-    read_rule(filename, &status);
-    free(filename);
-    return status;
-}
+//int main() {
+    //int status = 0;
+    //printf("filename\n>> ");
+    //char* filename = get_str(&status);
+    //if (filename == NULL) {
+        //printf("Can't get filename\n");
+        //exit(status);
+    //}
+    //read_rule(filename, &status);
+    //free(filename);
+    //return status;
+//}
 
 void read_rule(char* filepath, int* status) {
     FILE* file_rule = fopen(filepath, "rb");
 
     if (file_rule == NULL) {
-        if (DEBUG) {
-            printf("Can't open rule: '%s'\n", filepath);
-        }
         *status = NULL_PTR;
+        if (DEBUG) {
+            printf("[ERR %d]Can't open rule: '%s'\n", *status, filepath);
+        }
         //return;
     }
 
@@ -45,7 +44,7 @@ void read_rule(char* filepath, int* status) {
     //}
 
     if (*status && DEBUG) {
-        printf("Can't read count\n");
+        printf("[ERR %d] Can't read count\n", *status);
     }
 
     if (!*status) {
@@ -53,14 +52,14 @@ void read_rule(char* filepath, int* status) {
             printf("\nCount of Teams (colors): %d\n", count);
 
         } else {
-            printf("[ERR] can't read data\n");
+            printf("[ERR %d] can't read data\n", READ_ERR);
             *status = NULL_PTR;
         }
     }
 
     int color = 0;
     float power;
-    do {
+    while (color < (count - 1) && !*status) {
         if (fread(&color, sizeof(color), 1, file_rule) == 1) {
             printf("\nColor# %d\n", color);
 
@@ -95,8 +94,7 @@ void read_rule(char* filepath, int* status) {
         }
 
         //color++;
-    } while (color < (count - 1) && !*status);
-    //}
+    }
 
     if (file_rule != NULL) {
         fclose(file_rule);

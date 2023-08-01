@@ -101,3 +101,5 @@ void read_rule(char* filepath, int* status) {
     }
 }
 
+int get_groups_count(char* filename) {
+}

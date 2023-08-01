@@ -7,6 +7,9 @@
 #define MAX_ATOM_RADIUS 100
 #define SPEED_LIMIT 0.9
 #define ATOM_SEARCH_RADIUS 80
+#define MAX_GROUPS 5
+
+#define ARR_SIZE 10
 
 #define START_ATOMS_COUNT 250 // per group
 

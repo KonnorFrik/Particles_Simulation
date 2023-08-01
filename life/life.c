@@ -8,7 +8,16 @@
 #include "life.h"
 //#include "color.h"
 
+/*
+   get filename from user
+   get groups count from file
+   fill colors 
+   if groups more then prepareded colors - generate new color
+   fill atoms arr with info from file
+ */
+
 int main(int argc, char *argv[]) {
+    // for randomise random
     time_t t;
     srand((unsigned) time(&t));
 
@@ -22,7 +31,7 @@ int main(int argc, char *argv[]) {
         status = INIT_ERR;
     }
 
-    SDL_Window* window = SDL_CreateWindow("Move Rectangle", // creates a window
+    SDL_Window* window = SDL_CreateWindow("Particles", // creates a window
                                        WINDOW_ZERO_POS,
                                        WINDOW_ZERO_POS,
                                        Win_width,
@@ -38,23 +47,41 @@ int main(int argc, char *argv[]) {
         exit(status);
     }
 
+    printf("Enter filename with rule. Empty for random\n>> ");
+    char* filename = get_str(&status);
+
+    int groups = 0;
+
+    int COLOR_CODES[];// = { RED, GREEN, BLUE };
+    int color_codes_curr_len = 0;
+
+    int* COLORS[ARR_SIZE];
+    int colors_curr_len = 0;
+
+    if (filename[0] != '\0') {
+        printf("READ RULE\n");
+
+    } else {
+        printf("RANDOM\n");
+        groups = rand() % MAX_GROUPS;
+
+        fill_colors(COLORS, colors_curr_len, groups);
+        // TODO 
+    }
+
     /*****COLOR MODULE*********/
-    //const int COLOR_CODES[] = { RED };
-    const int COLOR_CODES[] = { RED, GREEN, BLUE };
-    int* COLORS[sizeof(COLOR_CODES) / sizeof(COLOR_CODES[0])];
-    int RED_COLOR[4] = { 255, 0, 0, 255 };
-    int GREEN_COLOR[4] = { 0, 255, 0, 255 };
-    int BLUE_COLOR[4] = { 0, 0, 255, 255 };
-    int YELLOW_COLOR[4] = { 0, 255, 255, 255 };
-    int WHITE_COLOR[4] = { 255, 255, 255, 255 };
-    COLORS[RED] = RED_COLOR;
-    COLORS[GREEN] = GREEN_COLOR;
-    COLORS[BLUE] = BLUE_COLOR;
+    //int RED_COLOR[4] = { 255, 0, 0, 255 };
+    //int GREEN_COLOR[4] = { 0, 255, 0, 255 };
+    //int BLUE_COLOR[4] = { 0, 0, 255, 255 };
+    //int YELLOW_COLOR[4] = { 0, 255, 255, 255 };
+    //int WHITE_COLOR[4] = { 255, 255, 255, 255 };
+    //COLORS[RED] = RED_COLOR;
+    //COLORS[GREEN] = GREEN_COLOR;
+    //COLORS[BLUE] = BLUE_COLOR;
     /*****COLOR MODULE*********/
 
     int radius_step = 1;
 
-    int groups = sizeof(COLOR_CODES) / sizeof(COLOR_CODES[0]);
     int atoms_per_group = START_ATOMS_COUNT;
     //int atoms_count = groups * atoms_per_group;
 

@@ -15,11 +15,11 @@
 #define EXIT_CODE -1
 enum ERR_CODES {
     NEUTRAL = 0,
-    NULL_PTR,       // 1
-    INPUT_ERR,      // 2
-    OUTPUT_ERR,     // 3
-    READ_ERR,       // 4
-    WRITE_ERR,      // 5
+    NULL_PTR,    // 1
+    INPUT_ERR,   // 2
+    OUTPUT_ERR,  // 3
+    READ_ERR,    // 4
+    WRITE_ERR,   // 5
     INIT_ERR = 10,
 };
 

@@ -11,7 +11,7 @@
 
 #define ARR_SIZE 10
 
-#define START_ATOMS_COUNT 250 // per group
+#define START_ATOMS_COUNT 250  // per group
 
 #define POWER_MAX 3
 
@@ -26,7 +26,7 @@ enum color_codes {
 };
 
 typedef struct {
-    SDL_Rect* atom; // x y w h 
+    SDL_Rect* atom;  // x y w h
     int color_code;
     float vx;
     float vy;
@@ -38,7 +38,7 @@ void change_radius(SDL_Rect* rect, int radius);
 ATOM* init_atom(int* status);
 void fill_atom(ATOM* obj, int radius, int color, float* powers);
 void destroy_atom(ATOM* obj);
-void random_position(ATOM** group, int group_size);
+void random_position(ATOM** group, int group_size, int win_w, int win_h);
 float* get_random_powers(int groups);
 void process_groups(ATOM*** all, int color1, int color2, int group_size);
 void keep_in_screen(ATOM*** all, int groups, int atoms_per_group, int win_w, int win_h);

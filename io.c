@@ -1,9 +1,9 @@
 #include "io.h"
 
+#include <dirent.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <dirent.h>
 
 #include "life/settings.h"
 
@@ -148,7 +148,7 @@ int dirlist(char* dir_name) {
     d = opendir(dir_name);
     if (d != NULL) {
         while ((dir = readdir(d)) != NULL) {
-            if (strcmp(dir->d_name, ".") != 0 &&  strcmp(dir->d_name, "..") != 0){
+            if (strcmp(dir->d_name, ".") != 0 && strcmp(dir->d_name, "..") != 0) {
                 count++;
                 printf("%d.%s\n", count, dir->d_name);
             }
@@ -158,14 +158,14 @@ int dirlist(char* dir_name) {
     return count;
 }
 
-void flnm_from_dir(char* dir_name, int offset) {
+void flnm_from_dir(char* dir_name) {
     DIR* d = NULL;
     struct dirent* dir = NULL;
 
     d = opendir(dir_name);
     if (d != NULL) {
         while ((dir = readdir(d)) != NULL) {
-            if (strcmp(dir->d_name, ".") != 0 &&  strcmp(dir->d_name, "..") != 0){
+            if (strcmp(dir->d_name, ".") != 0 && strcmp(dir->d_name, "..") != 0) {
                 printf("%s\n", dir->d_name);
             }
         }

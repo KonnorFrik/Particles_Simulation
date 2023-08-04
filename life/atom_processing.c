@@ -1,9 +1,9 @@
 #include <SDL2/SDL.h>
-#include <stdlib.h>
 #include <math.h>
+#include <stdlib.h>
 
-#include "settings.h"
 #include "life.h"
+#include "settings.h"
 
 void change_radius(SDL_Rect* rect, int radius) {
     rect->w = radius;
@@ -42,6 +42,10 @@ ATOM* init_atom(int* status) {
 
     } else {
         *status = NULL_PTR;
+
+        if (atom_rect != NULL) {
+            free(atom_rect);
+        }
     }
 
     return obj;
@@ -60,26 +64,26 @@ void fill_atom(ATOM* obj, int radius, int color, float* powers) {
 
 void destroy_atom(ATOM* obj) {
     if (obj != NULL) {
-        //if (obj->atom != NULL) {
-            //free(obj->atom);
+        // if (obj->atom != NULL) {
+        // free(obj->atom);
         //}
 
-        //if (obj->powers != NULL) {
-            //free(obj->powers);
+        // if (obj->powers != NULL) {
+        // free(obj->powers);
         //}
         free(obj);
     }
 }
 
-void random_position(ATOM** group, int group_size) {
+void random_position(ATOM** group, int group_size, int win_w, int win_h) {
     for (int i = 0; i < group_size; ++i) {
-        group[i]->atom->x = rand() % WIN_W;
-        group[i]->atom->y = rand() % WIN_H;
+        group[i]->atom->x = rand() % win_w;
+        group[i]->atom->y = rand() % win_h;
     }
 }
 
 float* get_random_powers(int groups) {
-    float* pwrs = calloc(groups, sizeof(int));
+    float* pwrs = calloc(groups, sizeof(float));
     if (pwrs != NULL) {
         for (int i = 0; i < groups; ++i) {
             pwrs[i] = frand();
@@ -110,8 +114,8 @@ void process_groups(ATOM*** all, int color1, int color2, int group_size) {
                 fx += F * dx;
                 fy += F * dy;
 
-                //if (DEBUG) {
-                    //printf("F: %f\n", F);
+                // if (DEBUG) {
+                // printf("F: %f\n", F);
                 //}
             }
 
@@ -134,23 +138,21 @@ void process_groups(ATOM*** all, int color1, int color2, int group_size) {
                 } else {
                     group1[first]->vy = SPEED_LIMIT;
                 }
-
             }
 
             group1[first]->atom->x += round(group1[first]->vx);
             group1[first]->atom->y += round(group1[first]->vy);
 
-            //if (DEBUG) {
-                //printf("[DEBUG]\n");
-                //printf("f: %d, s:%d\n", first, second);
-                //printf("fx: %f  fy: %f\n", fx, fy);
-                //printf("dx: %f  dy: %f\n", dx, dy);
-                //printf("vx: %f , vy: %f\n", group1[first]->vx, group1[first]->vy);
-                //printf("d: %d\n", d);
-                //printf("i: %d, atom[f]->x: %d  atom[f]->y: %d\n", first, group1[first]->atom->x, group1[first]->atom->y);
-                //printf("\n");
+            // if (DEBUG) {
+            // printf("[DEBUG]\n");
+            // printf("f: %d, s:%d\n", first, second);
+            // printf("fx: %f  fy: %f\n", fx, fy);
+            // printf("dx: %f  dy: %f\n", dx, dy);
+            // printf("vx: %f , vy: %f\n", group1[first]->vx, group1[first]->vy);
+            // printf("d: %d\n", d);
+            // printf("i: %d, atom[f]->x: %d  atom[f]->y: %d\n", first, group1[first]->atom->x,
+            // group1[first]->atom->y); printf("\n");
             //}
-
         }
     }
 }
@@ -175,7 +177,6 @@ void keep_in_screen(ATOM*** all, int groups, int atoms_per_group, int win_w, int
                 all[gr][i]->atom->y = 1;
                 all[gr][i]->vy *= -1;
             }
-
         }
     }
 }

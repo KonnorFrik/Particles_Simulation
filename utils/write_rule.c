@@ -12,18 +12,17 @@
    int powers (count times)
  */
 
-
-//int main() {
-    //int status = 0;
-    //printf("filename\n>> ");
-    //char* filename = get_str(&status);
-    //if (filename == NULL) {
-        //printf("Can't get filename\n");
-        //exit(status);
-    //}
-    //write_rule(filename, &status);
-    //free(filename);
-    //return status;
+// int main() {
+// int status = 0;
+// printf("filename\n>> ");
+// char* filename = get_str(&status);
+// if (filename == NULL) {
+// printf("Can't get filename\n");
+// exit(status);
+//}
+// write_rule(filename, &status);
+// free(filename);
+// return status;
 //}
 
 void write_rule(char* filepath, int* status) {

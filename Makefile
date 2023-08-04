@@ -15,7 +15,7 @@ HDRS :=
 
 all: check_dirs life rule_manager clean
 
-life: life.o atom_processing.o my_math.o io.o
+life: life.o atom_processing.o my_math.o io.o color.o
 > $(CC) $? $(SDL_FLAGS) $(CFLAGS) -o $(build_dir)/$@
 
 rule_manager: rule_manager.o read_rule.o write_rule.o io.o
@@ -28,6 +28,8 @@ check_dirs: check_dirs.sh
 debug: $(life_src_dir)/life.c $(life_src_dir)/atom_processing.c $(life_src_dir)/my_math.c
 > $(CC) $(CFLAGS) -g $? -o $(build_dir)/$@
 
+rebuild: clean_all all
+
 clean:
 > rm -f *.o
 
@@ -38,4 +40,7 @@ clean_all: clean
 > $(CC) $(W_FLAGS) -c $? -o $@
 
 %.o: $(utils_src_dir)/%.c
+> $(CC) $(W_FLAGS) -c $? -o $@
+
+%.o: %.c
 > $(CC) $(W_FLAGS) -c $? -o $@

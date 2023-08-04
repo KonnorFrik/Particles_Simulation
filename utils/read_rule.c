@@ -9,21 +9,20 @@
    Rule file struct
    int count
    int color
-   int powers (count times)
+   float powers (count times)
  */
 
-
-//int main() {
-    //int status = 0;
-    //printf("filename\n>> ");
-    //char* filename = get_str(&status);
-    //if (filename == NULL) {
-        //printf("Can't get filename\n");
-        //exit(status);
-    //}
-    //read_rule(filename, &status);
-    //free(filename);
-    //return status;
+// int main() {
+// int status = 0;
+// printf("filename\n>> ");
+// char* filename = get_str(&status);
+// if (filename == NULL) {
+// printf("Can't get filename\n");
+// exit(status);
+//}
+// read_rule(filename, &status);
+// free(filename);
+// return status;
 //}
 
 void read_rule(char* filepath, int* status) {
@@ -34,13 +33,13 @@ void read_rule(char* filepath, int* status) {
         if (DEBUG) {
             printf("[ERR %d]Can't open rule: '%s'\n", *status, filepath);
         }
-        //return;
+        // return;
     }
 
     int count = 0;
-    //if (!*status) {
-        //printf("Count of teams\n>> ");
-        //count = get_number(status);
+    // if (!*status) {
+    // printf("Count of teams\n>> ");
+    // count = get_number(status);
     //}
 
     if (*status && DEBUG) {
@@ -73,9 +72,8 @@ void read_rule(char* filepath, int* status) {
 
         int powers_count = 0;
         while (powers_count < count && !*status) {
-
             if (fread(&power, sizeof(power), 1, file_rule) == 1) {
-                //printf("\tPower #%d for color: %d\n>> ", powers_count, color);
+                // printf("\tPower #%d for color: %d\n>> ", powers_count, color);
                 printf("\tPower# %d - %f\n", powers_count, power);
 
             } else {
@@ -86,20 +84,11 @@ void read_rule(char* filepath, int* status) {
                 continue;
             }
 
-            //if (*status) {
-                //continue;
-            //}
-
             powers_count++;
         }
-
-        //color++;
     }
 
     if (file_rule != NULL) {
         fclose(file_rule);
     }
-}
-
-int get_groups_count(char* filename) {
 }

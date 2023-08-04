@@ -1,11 +1,11 @@
-#include <stdlib.h>
 #include <math.h>
+#include <stdlib.h>
 
 #include "life.h"
 
 float frand() {
     float a = POWER_MAX;
-    float res = ((float)rand()/(float)(RAND_MAX)) * a;
+    float res = ((float)rand() / (float)(RAND_MAX)) * a;
     if ((rand() % 2) == 0) {
         res = -res;
     }
@@ -16,4 +16,3 @@ float frand() {
 
     return res;
 }
-

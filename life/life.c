@@ -50,8 +50,17 @@ int main(int argc, char* argv[]) {
         printf("[ERR %d] Initializing window or renderer: %s\n", status, SDL_GetError());
     }
 
-    printf("Enter filename with rule. Empty for random\n>> ");
-    char* filename = get_str(&status);
+    char* filename = NULL;
+    int is_allocated_filename = 0;
+
+    if (argc < 2) {
+        printf("Enter filename with rule. Empty for random\n>> ");
+        filename = get_str(&status);
+        is_allocated_filename = 1;
+
+    } else {
+        filename = argv[1];
+    }
 
     if (filename == NULL) {
         status = NULL_PTR;
@@ -59,8 +68,8 @@ int main(int argc, char* argv[]) {
 
     int* COLOR_CODES = NULL;
     int** COLORS = NULL;
-
     int is_read = 0;
+
     if (!status && filename[0] != '\0') {
         if (DEBUG) {
             printf("READ RULE\n");
@@ -69,9 +78,11 @@ int main(int argc, char* argv[]) {
     }
 
     int groups = 0;
+
     if (is_read && !status) {
         // read groups
         groups = read_groups(filename, &status);
+
         if (groups != 0) {
             COLOR_CODES = fill_color_codes(filename, &status);
 
@@ -93,9 +104,11 @@ int main(int argc, char* argv[]) {
     } else {
         // random groups
         groups = rand() % MAX_GROUPS;
+
         if (groups == 0) {
             groups++;
         }
+
         COLOR_CODES = calloc(groups, sizeof(int));
         COLORS = calloc(groups, sizeof(int*));
 
@@ -119,15 +132,16 @@ int main(int argc, char* argv[]) {
     }
 
     int radius_step = 1;
-
     int atoms_per_group = START_ATOMS_COUNT;
 
     // CAN BE ERR HERE - groups may not be readed from file - Clear screen in simul
     /************INIT ALL GROUPS ARRAY**************/
     ATOM*** atoms_arr = NULL;
+
     if (groups != 0) {
         atoms_arr = calloc(groups, sizeof(ATOM**));
     }
+
     if (atoms_arr == NULL) {
         status = NULL_PTR;
         printf("[ERR %d] Can't allocate atom array\n", status);
@@ -137,6 +151,7 @@ int main(int argc, char* argv[]) {
     /************INIT ALL ATOM'S IN ALL GROUPS****************/
     for (int gr = 0; gr < groups; ++gr) {  // if groups = 0 - cycle can't run
         atoms_arr[gr] = calloc(atoms_per_group, sizeof(ATOM*));
+
         if (atoms_arr[gr] == NULL) {
             status = NULL_PTR;
             printf("[ERR %d] Can't allocate group array\n", status);
@@ -146,6 +161,7 @@ int main(int argc, char* argv[]) {
             atoms_arr[gr][i] = init_atom(&status);
         }
     }
+
     if (status) {
         printf("[ERR %d] Can't allocate atom\n", status);
     }
@@ -204,10 +220,12 @@ int main(int argc, char* argv[]) {
             if (event.type == SDL_QUIT) {
                 work = 0;
             }
+
             if (event.type == SDL_KEYDOWN) {
                 if (event.key.keysym.scancode == SDL_SCANCODE_ESCAPE) {
                     work = 0;
                 }
+
                 if (event.key.keysym.scancode == SDL_SCANCODE_KP_PLUS) {
                     for (int gr = 0; gr < groups; ++gr) {
                         for (int i = 0; i < atoms_per_group; ++i) {
@@ -215,6 +233,7 @@ int main(int argc, char* argv[]) {
                         }
                     }
                 }
+
                 if (event.key.keysym.scancode == SDL_SCANCODE_KP_MINUS) {
                     for (int gr = 0; gr < groups; ++gr) {
                         for (int i = 0; i < atoms_per_group; ++i) {
@@ -230,22 +249,26 @@ int main(int argc, char* argv[]) {
 
                     for (int gr = 0; gr < groups; ++gr) {
                         float* powers = get_random_powers(groups);
+
                         for (int i = 0; i < atoms_per_group; ++i) {
                             fill_atom(atoms_arr[gr][i], atoms_arr[gr][i]->atom->w, COLOR_CODES[gr], powers);
                         }
                     }
+
                     if (DEBUG) {
                         printf("powers: ");
+
                         for (int gr = 0; gr < groups; ++gr) {
                             printf("%f ", atoms_arr[0][0]->powers[gr]);
                         }
+
                         printf("\n");
                     }
                 }
 
                 if (event.key.keysym.scancode == SDL_SCANCODE_R) {
                     if (DEBUG) {
-                        printf("\nRESET POS\n");
+                        printf("\nRANDOM POS\n");
                     }
 
                     for (int gr = 0; gr < groups; ++gr) {
@@ -259,9 +282,11 @@ int main(int argc, char* argv[]) {
 
                 if (event.key.keysym.scancode == SDL_SCANCODE_UP) {
                     fps++;
+
                     if (fps >= MAX_FPS) {
                         fps = MAX_FPS;
                     }
+
                     if (DEBUG) {
                         printf("NEW FPS: %d\n", fps);
                     }
@@ -269,9 +294,11 @@ int main(int argc, char* argv[]) {
 
                 if (event.key.keysym.scancode == SDL_SCANCODE_DOWN) {
                     fps--;
+
                     if (fps <= MIN_FPS) {
                         fps = MIN_FPS;
                     }
+
                     if (DEBUG) {
                         printf("NEW FPS: %d\n", fps);
                     }
@@ -297,6 +324,7 @@ int main(int argc, char* argv[]) {
             int* curr_color = COLORS[gr];
             SDL_SetRenderDrawColor(rend, curr_color[R], curr_color[G], curr_color[B],
                                    curr_color[A]);  // set drawing color for rect
+
             for (int i = 0; i < atoms_per_group; ++i) {
                 SDL_RenderFillRect(rend, atoms_arr[gr][i]->atom);  // draw filled rect
             }
@@ -319,7 +347,7 @@ int main(int argc, char* argv[]) {
         free(atoms_arr);
     }
 
-    if (filename != NULL) {
+    if (is_allocated_filename && filename != NULL) {
         free(filename);
     }
 
@@ -333,6 +361,7 @@ int main(int argc, char* argv[]) {
                 free(COLORS[i]);  // double free err
             }
         }
+
         free(COLORS);
     }
 
@@ -346,6 +375,12 @@ float* read_powers_by_group(char* filename, int group_code) {
     FILE* file = fopen(filename, "rb");
     float* power = NULL;
     int groups_count = 0;
+
+    if (file == NULL) {
+        fprintf(stderr, "Error with file: '%s'", filename);
+        perror("> ");
+        exit(2);
+    }
 
     if (file != NULL) {
         fread(&groups_count, sizeof(groups_count), 1, file);
@@ -367,6 +402,7 @@ float* read_powers_by_group(char* filename, int group_code) {
 
         fclose(file);
     }
+
     return power;
 }
 
@@ -382,6 +418,7 @@ int read_groups(char* filename, int* status) {
         if (DEBUG) {
             printf("[DEBUG] can't open file in 'read_groups'\n");
         }
+
         *status = NULL_PTR;
     }
 
@@ -402,6 +439,7 @@ int* fill_color_codes(char* filename, int* status) {
 
         if (groups_count == 0) {
             *status = READ_ERR;
+
         } else {
             res = calloc(groups_count, sizeof(int));
         }
@@ -431,5 +469,6 @@ int** fill_colors(int groups, int* col_codes, int* status) {
     } else {
         *status = NULL_PTR;
     }
+
     return res;
 }
